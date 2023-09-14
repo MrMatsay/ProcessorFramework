@@ -488,7 +488,7 @@ namespace ProcessorFramework
                 thing.stackCount = GenMath.RoundRandom(activeProcess.ingredientCount * activeProcess.processDef.efficiency);
 
                 //Ingredient transfer
-                CompIngredients compIngredients = thing.TryGetComp<CompIngredients>();
+                /*  CompIngredients compIngredients = thing.TryGetComp<CompIngredients>();
                 List<ThingDef> ingredientList = new List<ThingDef>();
                 foreach (Thing ingredientThing in activeProcess.ingredientThings)
                 {
@@ -501,6 +501,27 @@ namespace ProcessorFramework
                 if (compIngredients != null && !ingredientList.NullOrEmpty())
                 {
                     compIngredients.ingredients.AddRange(ingredientList);
+                }  */
+
+                if (thing.TryGetComp<CompIngredients>() is CompIngredients compIngredients)
+                {
+                    List<ThingDef> ingredientList = new List<ThingDef>();
+                    foreach (Thing ingredientThing in activeProcess.ingredientThings)
+                    {
+                        List<ThingDef> innerIngredients = ingredientThing.TryGetComp<CompIngredients>()?.ingredients;
+                        if (!innerIngredients.NullOrEmpty())
+                        {
+                            ingredientList.AddRange(innerIngredients);
+                        }
+                        else
+                        {
+                            compIngredients.RegisterIngredient(ingredientThing.def);
+                        }
+                    }
+                    if (compIngredients != null && !ingredientList.NullOrEmpty())
+                    {
+                        compIngredients.ingredients.AddRange(ingredientList);
+                    }
                 }
 
                 //Quality
